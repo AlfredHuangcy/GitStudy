@@ -1,0 +1,47 @@
+package jp.co.worksap.batch;
+
+import java.security.InvalidParameterException;
+
+import jp.co.worksap.bootcamp.log.BCLogFactory;
+import jp.co.worksap.product.ProductMain;
+import jp.co.worksap.resource.ResourceHolder;
+
+import org.apache.commons.logging.Log;
+
+public class BatchMain {
+	private static Log log = BCLogFactory.getLog(BatchMain.class);
+	public static void main(String[] args) {
+		int statusCode = 0;
+		ResourceHolder resourceHolder = null;
+		try {
+			log.info("Program Start.");
+			try {
+				resourceHolder = ResourceHolder.makeResourceHolder(args);
+				ProductMain productMain = new ProductMain();
+				if(!productMain.executeMain(resourceHolder)){
+					statusCode = 999;
+				}
+			}
+			catch(InvalidParameterException e) {
+				log.fatal("入力パラメータが間違っています。",e);
+				statusCode = 1000;
+		    }
+			catch(Throwable throwable) {
+				log.fatal("異常発生",throwable);
+				statusCode = 2000;
+			}
+			if(statusCode == 0){
+				log.info("Finish Normal.");
+			}else{
+				log.fatal("Finish Fatal");
+			}
+		}
+		finally {
+			if(resourceHolder != null){
+				resourceHolder.closeSilentry();
+			}
+		}
+		System.exit(statusCode);
+	}
+}
+
