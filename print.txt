@@ -1,0 +1,67 @@
+package jp.co.worksap.printer;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import jp.co.worksap.dto.SvainJhSampleDto;
+import jp.co.worksap.printer.common.CommonPrinter;
+import jp.co.worksap.printer.common.ReportUtilPlus;
+import jp.co.worksap.resource.ResourceHolder;
+
+
+
+public class SalaryPrinter {
+	private CommonPrinter commonPrinter;
+	private int lineCount = 0;
+
+	public SalaryPrinter (ResourceHolder resourceHolder) throws IOException{
+		super();
+		commonPrinter = new CommonPrinter(resourceHolder.getOutputFileName(), "UTF-8");
+		printHeader();
+	}
+	public void printSvainJhSampleDto(SvainJhSampleDto svain) throws IOException {
+		
+	StringBuffer stringBuffer = new StringBuffer();
+	stringBuffer.append(ReportUtilPlus.limitedString(svain.getSya_bg(), 7));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.limitedString(svain.getSya_nm(), 20));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.limitedString(svain.getJig_cd(), 4));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.limitedString(svain.getBu_cd(), 4));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.limitedString(svain.getKa_cd(), 4));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.formatNumNoComma(svain.getKihon_kyu(), 17));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.formatNumNoComma(svain.getKazoku_kyu(),17));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.formatNumNoComma(svain.getYakusyoku_kyu(), 17));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.formatNumNoComma(svain.getTsujo_zan_jikan(), 5));
+	stringBuffer.append("   ");
+	stringBuffer.append(ReportUtilPlus.formatNumNoComma(svain.getSinya_zan_jikan(), 5));
+	stringBuffer.append("   ");
+	printLine(stringBuffer.toString());
+}
+
+
+	private void printHeader() throws IOException {
+		lineCount = 0;
+		printLine("");
+		printLine("　　　　　　　　　　☆☆☆　支給一覧　☆☆☆");
+		printLine("");
+		printLine("　　　社員番号　　　社員氏名　　　事業所コード　　　部コード　　　課コード　　　　　基本給　　　　　家族手当　　　　　役職手当　　　通常残業時間　　　深夜残業時間　　　　残業手当　　　　総支給　　　　");
+		printLine("");
+	}
+		private void printLine(String text) throws IOException{
+			if(lineCount >= 60){
+				commonPrinter.newPage();
+				printHeader();
+				}
+			lineCount++;
+			commonPrinter.writeLine(text);
+		}
+		public void close() throws IOException{
+			commonPrinter.close();
+		}
+}
